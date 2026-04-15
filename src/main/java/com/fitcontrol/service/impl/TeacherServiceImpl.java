@@ -1,9 +1,31 @@
+package com.fitcontrol.service.impl;
+
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.fitcontrol.dto.TeacherDTO;
+import com.fitcontrol.exception.DuplicateResourceException;
+import com.fitcontrol.exception.ResourceNotFoundException;
+import com.fitcontrol.model.Teacher;
+import com.fitcontrol.repository.TeacherRepository;
+import com.fitcontrol.service.TeacherService;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
 public class TeacherServiceImpl implements TeacherService {
 
     private final TeacherRepository teacherRepository;
     private final Cloudinary cloudinary;
+
+    public TeacherServiceImpl(TeacherRepository teacherRepository, Cloudinary cloudinary) {
+        this.teacherRepository = teacherRepository;
+        this.cloudinary = cloudinary;
+    }
 
     @Override
     public List<TeacherDTO> findAll() {

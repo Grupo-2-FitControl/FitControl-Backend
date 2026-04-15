@@ -1,3 +1,10 @@
+package com.fitcontrol.service;
+
+import com.fitcontrol.dto.TeacherDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
 public interface TeacherService {
     List<TeacherDTO> findAll();
     List<TeacherDTO> findAllActive();

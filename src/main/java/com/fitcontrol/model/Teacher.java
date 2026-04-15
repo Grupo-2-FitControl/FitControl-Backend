@@ -1,13 +1,15 @@
-import com.fitcontrol.model.Activity;
-import jakarta.persistence.Entity;
+package com.fitcontrol.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
+import java.util.List;
 
 @Entity
 @Table(name = "teacher")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Teacher {
 
     @Id
@@ -36,4 +38,37 @@ public class Teacher {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Activity> activities;
+
+    public Teacher() {}
+
+    public Teacher(Long id, String name, String dni, Integer hiringYear, Boolean isActive, String imageUrl, List<Activity> activities) {
+        this.id = id;
+        this.name = name;
+        this.dni = dni;
+        this.hiringYear = hiringYear;
+        this.isActive = isActive;
+        this.imageUrl = imageUrl;
+        this.activities = activities;
+    }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDni() { return dni; }
+    public void setDni(String dni) { this.dni = dni; }
+
+    public Integer getHiringYear() { return hiringYear; }
+    public void setHiringYear(Integer hiringYear) { this.hiringYear = hiringYear; }
+
+    public Boolean getIsActive() { return isActive; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public List<Activity> getActivities() { return activities; }
+    public void setActivities(List<Activity> activities) { this.activities = activities; }
 }
