@@ -1,4 +1,5 @@
-package com.fitcontrol.repository;
-
-public class TeacherRepository {
+@Repository
+public interface TeacherRepository extends JpaRepository<Teacher, Long> {
+    List<Teacher> findByIsActiveTrue();
+    boolean existsByDni(String dni);
 }
