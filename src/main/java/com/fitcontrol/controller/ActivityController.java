@@ -1,7 +1,9 @@
 package com.fitcontrol.controller;
 
 import com.fitcontrol.dto.ActivityDTO;
+import com.fitcontrol.dto.MemberDTO;
 import com.fitcontrol.service.ActivityService;
+import com.fitcontrol.service.EnrollmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +16,11 @@ import java.util.List;
 public class ActivityController {
 
     private final ActivityService activityService;
+    private final EnrollmentService enrollmentService;
 
-    public ActivityController(ActivityService activityService) {
+    public ActivityController(ActivityService activityService, EnrollmentService enrollmentService) {
         this.activityService = activityService;
+        this.enrollmentService = enrollmentService;
     }
 
     @GetMapping
@@ -29,6 +33,11 @@ public class ActivityController {
         return ResponseEntity.ok(activityService.findAllActive());
     }
 
+    @GetMapping("/future")
+    public ResponseEntity<List<ActivityDTO>> getFuture() {
+        return ResponseEntity.ok(activityService.findFutureActivities());
+    }
+
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<List<ActivityDTO>> getByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(activityService.findByTeacher(teacherId));
@@ -37,6 +46,11 @@ public class ActivityController {
     @GetMapping("/{id}")
     public ResponseEntity<ActivityDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(activityService.findById(id));
+    }
+
+    @GetMapping("/{id}/members")
+    public ResponseEntity<List<MemberDTO>> getMembersByActivity(@PathVariable Long id) {
+        return ResponseEntity.ok(enrollmentService.findMembersByActivity(id));
     }
 
     @PostMapping

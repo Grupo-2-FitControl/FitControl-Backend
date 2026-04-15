@@ -1,6 +1,8 @@
 package com.fitcontrol.controller;
 
+import com.fitcontrol.dto.ActivityDTO;
 import com.fitcontrol.dto.TeacherDTO;
+import com.fitcontrol.service.ActivityService;
 import com.fitcontrol.service.TeacherService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,11 @@ import java.util.List;
 public class TeacherController {
 
     private final TeacherService teacherService;
+    private final ActivityService activityService;
 
-    public TeacherController(TeacherService teacherService) {
+    public TeacherController(TeacherService teacherService, ActivityService activityService) {
         this.teacherService = teacherService;
+        this.activityService = activityService;
     }
 
     @GetMapping
@@ -48,5 +52,10 @@ public class TeacherController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         teacherService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesByTeacher(@PathVariable Long id) {
+        return ResponseEntity.ok(activityService.findByTeacher(id));
     }
 }

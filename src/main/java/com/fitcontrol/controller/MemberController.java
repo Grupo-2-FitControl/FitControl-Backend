@@ -1,6 +1,8 @@
 package com.fitcontrol.controller;
 
+import com.fitcontrol.dto.ActivityDTO;
 import com.fitcontrol.dto.MemberDTO;
+import com.fitcontrol.service.EnrollmentService;
 import com.fitcontrol.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,11 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final EnrollmentService enrollmentService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, EnrollmentService enrollmentService) {
         this.memberService = memberService;
+        this.enrollmentService = enrollmentService;
     }
 
     @GetMapping
@@ -48,5 +52,10 @@ public class MemberController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         memberService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesByMember(@PathVariable Long id) {
+        return ResponseEntity.ok(enrollmentService.findActivitiesByMember(id));
     }
 }
