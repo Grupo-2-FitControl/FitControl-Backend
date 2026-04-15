@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
+
 public class ActivityDTO {
 
     private Long id;
@@ -22,6 +24,8 @@ public class ActivityDTO {
 
     private Boolean isActive;
 
+    private LocalDateTime startDate;
+
     @NotNull(message = "Teacher ID is required")
     private Long teacherId;
 
@@ -30,13 +34,15 @@ public class ActivityDTO {
     public ActivityDTO() {}
 
     public ActivityDTO(Long id, String name, String description, String schedule,
-                       Integer capacity, Boolean isActive, Long teacherId, String teacherName) {
+                       Integer capacity, Boolean isActive, LocalDateTime startDate,
+                       Long teacherId, String teacherName) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.schedule = schedule;
         this.capacity = capacity;
         this.isActive = isActive;
+        this.startDate = startDate;
         this.teacherId = teacherId;
         this.teacherName = teacherName;
     }
@@ -58,6 +64,9 @@ public class ActivityDTO {
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public LocalDateTime getStartDate() { return startDate; }
+    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
 
     public Long getTeacherId() { return teacherId; }
     public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
