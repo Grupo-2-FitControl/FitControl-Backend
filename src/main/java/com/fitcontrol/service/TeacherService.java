@@ -1,4 +1,15 @@
 package com.fitcontrol.service;
 
-public class TeacherService {
+import com.fitcontrol.dto.TeacherDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+public interface TeacherService {
+    List<TeacherDTO> findAll();
+    List<TeacherDTO> findAllActive();
+    TeacherDTO findById(Long id);
+    TeacherDTO create(TeacherDTO dto, MultipartFile image);
+    TeacherDTO update(Long id, TeacherDTO dto, MultipartFile image);
+    void delete(Long id);
 }
