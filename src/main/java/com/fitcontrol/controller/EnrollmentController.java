@@ -34,9 +34,13 @@ public class EnrollmentController {
     @GetMapping
     public ResponseEntity<List<EnrollmentDTO>> getEnrollments(
         @RequestParam(name = "memberId", required = false) Long memberId,
-        @RequestParam(name = "activityId", required = false) Long activityId
+        @RequestParam(name = "activityId", required = false) Long activityId,
+        @RequestParam(name = "futureOnly", defaultValue = "false") boolean futureOnly
     ) {
         if (memberId != null) {
+            if (futureOnly) {
+                return ResponseEntity.ok(enrollmentService.getFutureEnrollmentsByMember(memberId));
+            }
             return ResponseEntity.ok(enrollmentService.getEnrollmentsByMember(memberId));
         }
 

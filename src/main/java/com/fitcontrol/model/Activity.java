@@ -2,15 +2,19 @@ package com.fitcontrol.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "activity")
@@ -20,16 +24,22 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El nombre de la actividad es obligatorio")
+    @NotBlank(message = "El titulo de la actividad es obligatorio")
     @Column(nullable = false, length = 120)
-    private String name;
+    private String title;
 
     @Column(length = 500)
     private String description;
 
-    @Min(value = 1, message = "La capacidad maxima debe ser al menos 1")
-    @Column(name = "max_capacity", nullable = false)
-    private Integer maxCapacity = 20;
+    @NotNull(message = "El precio es obligatorio")
+    @Positive(message = "El precio debe ser mayor que 0")
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
+    @NotNull(message = "La fecha es obligatoria")
+    @Future(message = "La fecha de la actividad debe ser futura")
+    @Column(name = "activity_date", nullable = false)
+    private LocalDateTime activityDate;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
@@ -37,20 +47,31 @@ public class Activity {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
-    @ManyToMany(mappedBy = "activities")
-    private List<Member> members = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
 
     public Activity() {
     }
 
-    public Activity(Long id, String name, String description, Integer maxCapacity, Boolean isActive, String imageUrl, List<Member> members) {
+    public Activity(
+        Long id,
+        String title,
+        String description,
+        BigDecimal price,
+        LocalDateTime activityDate,
+        Boolean isActive,
+        String imageUrl,
+        Teacher teacher
+    ) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.description = description;
-        this.maxCapacity = maxCapacity;
+        this.price = price;
+        this.activityDate = activityDate;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
-        this.members = members;
+        this.teacher = teacher;
     }
 
     public Long getId() {
@@ -61,12 +82,12 @@ public class Activity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -77,12 +98,20 @@ public class Activity {
         this.description = description;
     }
 
-    public Integer getMaxCapacity() {
-        return maxCapacity;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public LocalDateTime getActivityDate() {
+        return activityDate;
+    }
+
+    public void setActivityDate(LocalDateTime activityDate) {
+        this.activityDate = activityDate;
     }
 
     public Boolean getIsActive() {
@@ -101,11 +130,11 @@ public class Activity {
         this.imageUrl = imageUrl;
     }
 
-    public List<Member> getMembers() {
-        return members;
+    public Teacher getTeacher() {
+        return teacher;
     }
 
-    public void setMembers(List<Member> members) {
-        this.members = members;
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 }

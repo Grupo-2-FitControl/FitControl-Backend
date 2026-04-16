@@ -14,6 +14,8 @@ public interface EnrollmentService {
 
     List<EnrollmentDTO> getEnrollmentsByActivity(Long activityId);
 
+    List<EnrollmentDTO> getFutureEnrollmentsByMember(Long memberId);
+
     EnrollmentDTO updateEnrollment(Long id, EnrollmentDTO enrollmentDTO);
 
     void deleteEnrollment(Long id);

@@ -33,10 +33,25 @@ public class ActivityController {
 
     @GetMapping
     public ResponseEntity<List<ActivityDTO>> getActivities(
-        @RequestParam(name = "activeOnly", defaultValue = "false") boolean activeOnly
+        @RequestParam(name = "activeOnly", defaultValue = "false") boolean activeOnly,
+        @RequestParam(name = "futureOnly", defaultValue = "false") boolean futureOnly
     ) {
+        if (futureOnly) {
+            return ResponseEntity.ok(activityService.getFutureActivities());
+        }
+
         List<ActivityDTO> activities = activeOnly ? activityService.getActiveActivities() : activityService.getAllActivities();
         return ResponseEntity.ok(activities);
+    }
+
+    @GetMapping("/future")
+    public ResponseEntity<List<ActivityDTO>> getFutureActivities() {
+        return ResponseEntity.ok(activityService.getFutureActivities());
+    }
+
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesByTeacher(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(activityService.getActivitiesByTeacher(teacherId));
     }
 
     @GetMapping("/{id}")

@@ -12,6 +12,10 @@ public interface ActivityService {
 
     List<ActivityDTO> getActiveActivities();
 
+    List<ActivityDTO> getFutureActivities();
+
+    List<ActivityDTO> getActivitiesByTeacher(Long teacherId);
+
     ActivityDTO updateActivity(Long id, ActivityDTO activityDTO);
 
     void deleteActivity(Long id);

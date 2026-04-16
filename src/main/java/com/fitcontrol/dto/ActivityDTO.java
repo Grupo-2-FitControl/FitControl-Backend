@@ -1,38 +1,65 @@
 package com.fitcontrol.dto;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class ActivityDTO {
 
     private Long id;
 
-    @NotBlank(message = "El nombre de la actividad es obligatorio")
-    @Size(max = 120, message = "El nombre no puede superar 120 caracteres")
-    private String name;
+    @NotBlank(message = "El titulo de la actividad es obligatorio")
+    @Size(max = 120, message = "El titulo no puede superar 120 caracteres")
+    private String title;
 
     @Size(max = 500, message = "La descripcion no puede superar 500 caracteres")
     private String description;
 
-    @Min(value = 1, message = "La capacidad maxima debe ser al menos 1")
-    private Integer maxCapacity;
+    @NotNull(message = "El precio es obligatorio")
+    @Positive(message = "El precio debe ser mayor que 0")
+    private BigDecimal price;
+
+    @NotNull(message = "La fecha es obligatoria")
+    @Future(message = "La fecha de la actividad debe ser futura")
+    private LocalDateTime activityDate;
 
     private Boolean isActive;
 
     @Size(max = 500, message = "La URL de la imagen no puede superar 500 caracteres")
     private String imageUrl;
 
+    @NotNull(message = "El id del profesor es obligatorio")
+    private Long teacherId;
+
+    private String teacherName;
+
     public ActivityDTO() {
     }
 
-    public ActivityDTO(Long id, String name, String description, Integer maxCapacity, Boolean isActive, String imageUrl) {
+    public ActivityDTO(
+        Long id,
+        String title,
+        String description,
+        BigDecimal price,
+        LocalDateTime activityDate,
+        Boolean isActive,
+        String imageUrl,
+        Long teacherId,
+        String teacherName
+    ) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.description = description;
-        this.maxCapacity = maxCapacity;
+        this.price = price;
+        this.activityDate = activityDate;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.teacherId = teacherId;
+        this.teacherName = teacherName;
     }
 
     public Long getId() {
@@ -43,12 +70,12 @@ public class ActivityDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -59,12 +86,20 @@ public class ActivityDTO {
         this.description = description;
     }
 
-    public Integer getMaxCapacity() {
-        return maxCapacity;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setMaxCapacity(Integer maxCapacity) {
-        this.maxCapacity = maxCapacity;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public LocalDateTime getActivityDate() {
+        return activityDate;
+    }
+
+    public void setActivityDate(LocalDateTime activityDate) {
+        this.activityDate = activityDate;
     }
 
     public Boolean getIsActive() {
@@ -81,5 +116,21 @@ public class ActivityDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
     }
 }

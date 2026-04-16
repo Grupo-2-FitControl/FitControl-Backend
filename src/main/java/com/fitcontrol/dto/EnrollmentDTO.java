@@ -3,6 +3,7 @@ package com.fitcontrol.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class EnrollmentDTO {
 
@@ -18,7 +19,12 @@ public class EnrollmentDTO {
 
     private String activityName;
 
-    @NotNull(message = "La fecha de inscripcion es obligatoria")
+    private LocalDateTime activityDate;
+
+    private Long teacherId;
+
+    private String teacherName;
+
     private LocalDate enrollmentDate;
 
     @Pattern(regexp = "ACTIVE|CANCELLED|COMPLETED", message = "Estado invalido")
@@ -33,6 +39,9 @@ public class EnrollmentDTO {
         String memberName,
         Long activityId,
         String activityName,
+        LocalDateTime activityDate,
+        Long teacherId,
+        String teacherName,
         LocalDate enrollmentDate,
         String status
     ) {
@@ -41,6 +50,9 @@ public class EnrollmentDTO {
         this.memberName = memberName;
         this.activityId = activityId;
         this.activityName = activityName;
+        this.activityDate = activityDate;
+        this.teacherId = teacherId;
+        this.teacherName = teacherName;
         this.enrollmentDate = enrollmentDate;
         this.status = status;
     }
@@ -83,6 +95,30 @@ public class EnrollmentDTO {
 
     public void setActivityName(String activityName) {
         this.activityName = activityName;
+    }
+
+    public LocalDateTime getActivityDate() {
+        return activityDate;
+    }
+
+    public void setActivityDate(LocalDateTime activityDate) {
+        this.activityDate = activityDate;
+    }
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
     }
 
     public LocalDate getEnrollmentDate() {

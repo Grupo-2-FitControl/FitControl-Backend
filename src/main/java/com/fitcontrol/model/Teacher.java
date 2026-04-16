@@ -5,10 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "teacher")
@@ -45,6 +48,9 @@ public class Teacher {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @OneToMany(mappedBy = "teacher")
+    private List<Activity> activities = new ArrayList<>();
+
     public Teacher() {
     }
 
@@ -56,7 +62,8 @@ public class Teacher {
         String specialization,
         Integer hireYear,
         Boolean isActive,
-        String imageUrl
+        String imageUrl,
+        List<Activity> activities
     ) {
         this.id = id;
         this.name = name;
@@ -66,6 +73,7 @@ public class Teacher {
         this.hireYear = hireYear;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.activities = activities;
     }
 
     public Long getId() {
@@ -130,5 +138,13 @@ public class Teacher {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 }

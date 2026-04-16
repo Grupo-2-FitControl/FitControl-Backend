@@ -3,6 +3,7 @@ package com.fitcontrol.service.impl;
 import com.fitcontrol.dto.EnrollmentDTO;
 import com.fitcontrol.exception.BusinessRuleException;
 import com.fitcontrol.exception.DuplicateResourceException;
+import com.fitcontrol.exception.ForbiddenOperationException;
 import com.fitcontrol.exception.ResourceNotFoundException;
 import com.fitcontrol.model.Activity;
 import com.fitcontrol.model.Enrollment;
@@ -11,6 +12,8 @@ import com.fitcontrol.repository.ActivityRepository;
 import com.fitcontrol.repository.EnrollmentRepository;
 import com.fitcontrol.repository.MemberRepository;
 import com.fitcontrol.service.EnrollmentService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -43,17 +46,28 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Activity activity = findActivity(enrollmentDTO.getActivityId());
 
         if (Boolean.FALSE.equals(member.getIsActive())) {
-            throw new BusinessRuleException("No se puede inscribir un miembro inactivo");
+            throw new ForbiddenOperationException("El usuario no ha pagado su cuota anual");
         }
 
         if (Boolean.FALSE.equals(activity.getIsActive())) {
             throw new BusinessRuleException("No se puede inscribir en una actividad inactiva");
         }
 
+        if (!activity.getActivityDate().isAfter(LocalDateTime.now())) {
+            throw new BusinessRuleException("Solo se permiten inscripciones en actividades futuras");
+        }
+
+        long futureEnrollments = enrollmentRepository.countFutureActiveEnrollmentsByMember(member.getId(), LocalDateTime.now());
+        if (futureEnrollments >= 3) {
+            throw new BusinessRuleException("Limite de 3 actividades futuras alcanzado");
+        }
+
         Enrollment enrollment = new Enrollment();
         enrollment.setMember(member);
         enrollment.setActivity(activity);
-        enrollment.setEnrollmentDate(enrollmentDTO.getEnrollmentDate());
+        enrollment.setEnrollmentDate(
+            enrollmentDTO.getEnrollmentDate() == null ? LocalDate.now() : enrollmentDTO.getEnrollmentDate()
+        );
         enrollment.setStatus(enrollmentDTO.getStatus() == null ? "ACTIVE" : enrollmentDTO.getStatus());
 
         Enrollment saved = enrollmentRepository.save(enrollment);
@@ -70,7 +84,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public List<EnrollmentDTO> getAllEnrollments() {
-        return enrollmentRepository.findAll().stream().map(this::toDto).toList();
+        return enrollmentRepository.findAllWithDetails().stream().map(this::toDto).toList();
     }
 
     @Override
@@ -83,6 +97,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public List<EnrollmentDTO> getEnrollmentsByActivity(Long activityId) {
         findActivity(activityId);
         return enrollmentRepository.findByActivityId(activityId).stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public List<EnrollmentDTO> getFutureEnrollmentsByMember(Long memberId) {
+        findMember(memberId);
+        return enrollmentRepository.findByMemberId(memberId)
+            .stream()
+            .filter(enrollment -> enrollment.getActivity().getActivityDate().isAfter(LocalDateTime.now()))
+            .map(this::toDto)
+            .toList();
     }
 
     @Override
@@ -104,8 +128,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
         existing.setMember(member);
         existing.setActivity(activity);
-        existing.setEnrollmentDate(enrollmentDTO.getEnrollmentDate());
-        existing.setStatus(enrollmentDTO.getStatus());
+        existing.setEnrollmentDate(
+            enrollmentDTO.getEnrollmentDate() == null ? existing.getEnrollmentDate() : enrollmentDTO.getEnrollmentDate()
+        );
+        existing.setStatus(enrollmentDTO.getStatus() == null ? existing.getStatus() : enrollmentDTO.getStatus());
 
         Enrollment saved = enrollmentRepository.save(existing);
         return toDto(saved);
@@ -145,7 +171,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             enrollment.getMember().getId(),
             enrollment.getMember().getName() + " " + enrollment.getMember().getLastName(),
             enrollment.getActivity().getId(),
-            enrollment.getActivity().getName(),
+            enrollment.getActivity().getTitle(),
+            enrollment.getActivity().getActivityDate(),
+            enrollment.getActivity().getTeacher().getId(),
+            enrollment.getActivity().getTeacher().getName() + " " + enrollment.getActivity().getTeacher().getLastName(),
             enrollment.getEnrollmentDate(),
             enrollment.getStatus()
         );
