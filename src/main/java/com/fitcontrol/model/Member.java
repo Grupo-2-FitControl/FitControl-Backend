@@ -1,14 +1,20 @@
 package com.fitcontrol.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "member")
@@ -41,6 +47,15 @@ public class Member {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @ManyToMany
+    @JoinTable(
+        name = "activity_member",
+        joinColumns = @JoinColumn(name = "member_id"),
+        inverseJoinColumns = @JoinColumn(name = "activity_id")
+    )
+    @JsonIgnore
+    private Set<Activity> activities = new HashSet<>();
+
     public Member() {
     }
 
@@ -51,7 +66,8 @@ public class Member {
         String dni,
         Integer registrationYear,
         Boolean isActive,
-        String imageUrl
+        String imageUrl,
+        Set<Activity> activities
     ) {
         this.id = id;
         this.name = name;
@@ -60,6 +76,7 @@ public class Member {
         this.registrationYear = registrationYear;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.activities = activities;
     }
 
     public Long getId() {
@@ -118,4 +135,11 @@ public class Member {
         this.imageUrl = imageUrl;
     }
 
+    public Set<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(Set<Activity> activities) {
+        this.activities = activities;
+    }
 }

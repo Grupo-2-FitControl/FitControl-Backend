@@ -37,15 +37,22 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
 
-        if (!member.getIsActive())
+        if (Boolean.FALSE.equals(member.getIsActive())) {
             throw new BusinessRuleException("Member with id " + memberId + " is inactive and cannot enroll", 403);
+        }
 
-        if (member.getActivities().contains(activity))
+        if (activity.getStartDate() == null || !activity.getStartDate().isAfter(LocalDateTime.now())) {
+            throw new BusinessRuleException("Only future activities allow enrollment", 409);
+        }
+
+        if (member.getActivities().contains(activity)) {
             throw new BusinessRuleException("Member is already enrolled in this activity", 409);
+        }
 
         long futureCount = activityRepository.countFutureActivitiesForMember(memberId, LocalDateTime.now());
-        if (futureCount >= 3)
+        if (futureCount >= 3) {
             throw new BusinessRuleException("Member cannot have more than 3 future activities enrolled", 409);
+        }
 
         member.getActivities().add(activity);
         memberRepository.save(member);
@@ -62,8 +69,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
 
-        if (!member.getActivities().contains(activity))
+        if (!member.getActivities().contains(activity)) {
             throw new BusinessRuleException("Member is not enrolled in this activity", 409);
+        }
 
         member.getActivities().remove(activity);
         memberRepository.save(member);
@@ -119,6 +127,14 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     private MemberDTO toMemberDTO(Member m) {
-        return new MemberDTO(m.getId(), m.getName(), m.getDni(), m.getIsActive(), m.getMembershipType());
+        return new MemberDTO(
+                m.getId(),
+                m.getName(),
+                m.getLastName(),
+                m.getDni(),
+                m.getRegistrationYear(),
+                m.getIsActive(),
+                m.getImageUrl()
+        );
     }
 }

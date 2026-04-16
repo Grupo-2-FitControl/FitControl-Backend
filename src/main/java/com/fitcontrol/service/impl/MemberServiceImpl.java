@@ -23,12 +23,14 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDTO createMember(MemberDTO memberDTO) {
         validateRegistrationYear(memberDTO.getRegistrationYear());
+        String normalizedDni = normalizeDni(memberDTO.getDni());
 
-        if (memberRepository.existsByDni(memberDTO.getDni())) {
-            throw new DuplicateResourceException("Ya existe un miembro con DNI " + memberDTO.getDni());
+        if (memberRepository.existsByDni(normalizedDni)) {
+            throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
         }
 
         Member member = toEntity(memberDTO);
+        member.setDni(normalizedDni);
         if (member.getIsActive() == null) {
             member.setIsActive(true);
         }
@@ -64,18 +66,19 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDTO updateMember(Long id, MemberDTO memberDTO) {
         validateRegistrationYear(memberDTO.getRegistrationYear());
+        String normalizedDni = normalizeDni(memberDTO.getDni());
 
         Member existingMember = memberRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
 
-        boolean dniChanged = !existingMember.getDni().equals(memberDTO.getDni());
-        if (dniChanged && memberRepository.existsByDni(memberDTO.getDni())) {
-            throw new DuplicateResourceException("Ya existe un miembro con DNI " + memberDTO.getDni());
+        boolean dniChanged = !existingMember.getDni().equals(normalizedDni);
+        if (dniChanged && memberRepository.existsByDni(normalizedDni)) {
+            throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
         }
 
         existingMember.setName(memberDTO.getName());
         existingMember.setLastName(memberDTO.getLastName());
-        existingMember.setDni(memberDTO.getDni());
+        existingMember.setDni(normalizedDni);
         existingMember.setRegistrationYear(memberDTO.getRegistrationYear());
         existingMember.setImageUrl(memberDTO.getImageUrl());
 
@@ -129,5 +132,9 @@ public class MemberServiceImpl implements MemberService {
         member.setIsActive(memberDTO.getIsActive());
         member.setImageUrl(memberDTO.getImageUrl());
         return member;
+    }
+
+    private String normalizeDni(String dni) {
+        return dni == null ? null : dni.trim().toUpperCase();
     }
 }
