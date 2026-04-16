@@ -1,61 +1,57 @@
 package com.fitcontrol.controller;
 
-import com.fitcontrol.dto.ActivityDTO;
 import com.fitcontrol.dto.MemberDTO;
-import com.fitcontrol.service.EnrollmentService;
 import com.fitcontrol.service.MemberService;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/members")
 public class MemberController {
 
     private final MemberService memberService;
-    private final EnrollmentService enrollmentService;
 
-    public MemberController(MemberService memberService, EnrollmentService enrollmentService) {
+    public MemberController(MemberService memberService) {
         this.memberService = memberService;
-        this.enrollmentService = enrollmentService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<MemberDTO>> getAll() {
-        return ResponseEntity.ok(memberService.findAll());
-    }
-
-    @GetMapping("/active")
-    public ResponseEntity<List<MemberDTO>> getActive() {
-        return ResponseEntity.ok(memberService.findAllActive());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(memberService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<MemberDTO> create(@Valid @RequestBody MemberDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.create(dto));
+    public ResponseEntity<MemberDTO> createMember(@Valid @RequestBody MemberDTO memberDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberService.createMember(memberDTO));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<MemberDTO>> getMembers(
+        @RequestParam(name = "activeOnly", defaultValue = "false") boolean activeOnly
+    ) {
+        List<MemberDTO> members = activeOnly ? memberService.getActiveMembers() : memberService.getAllMembers();
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long id) {
+        return ResponseEntity.ok(memberService.getMemberById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MemberDTO> update(@PathVariable Long id, @Valid @RequestBody MemberDTO dto) {
-        return ResponseEntity.ok(memberService.update(id, dto));
+    public ResponseEntity<MemberDTO> updateMember(@PathVariable Long id, @Valid @RequestBody MemberDTO memberDTO) {
+        return ResponseEntity.ok(memberService.updateMember(id, memberDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        memberService.delete(id);
+    public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
+        memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{id}/activities")
-    public ResponseEntity<List<ActivityDTO>> getActivitiesByMember(@PathVariable Long id) {
-        return ResponseEntity.ok(enrollmentService.findActivitiesByMember(id));
     }
 }
