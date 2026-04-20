@@ -1,6 +1,8 @@
 package com.fitcontrol.controller;
 
+import com.fitcontrol.dto.ActivityDTO;
 import com.fitcontrol.dto.MemberDTO;
+import com.fitcontrol.service.EnrollmentService;
 import com.fitcontrol.service.MemberService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final EnrollmentService enrollmentService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, EnrollmentService enrollmentService) {
         this.memberService = memberService;
+        this.enrollmentService = enrollmentService;
     }
 
     @PostMapping
@@ -53,5 +57,10 @@ public class MemberController {
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/activities")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesByUser(@PathVariable Long id) {
+        return ResponseEntity.ok(enrollmentService.findActivitiesByUser(id));
     }
 }
