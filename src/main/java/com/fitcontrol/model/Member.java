@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "member")
+@Table(name = "users")
 public class Member {
 
     @Id
@@ -49,7 +49,7 @@ public class Member {
 
     @ManyToMany
     @JoinTable(
-        name = "activity_member",
+        name = "activity_users",
         joinColumns = @JoinColumn(name = "member_id"),
         inverseJoinColumns = @JoinColumn(name = "activity_id")
     )
