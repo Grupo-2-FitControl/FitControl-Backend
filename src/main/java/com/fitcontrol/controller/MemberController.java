@@ -43,6 +43,11 @@ public class MemberController {
         return ResponseEntity.ok(members);
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<MemberDTO>> getActiveMembers() {
+        return ResponseEntity.ok(memberService.getActiveMembers());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<MemberDTO> getMemberById(@PathVariable Long id) {
         return ResponseEntity.ok(memberService.getMemberById(id));
