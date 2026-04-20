@@ -47,6 +47,9 @@ public class Member {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
+    @Column(name = "membership_type", length = 50)
+    private String membershipType;
+
     @ManyToMany
     @JoinTable(
         name = "activity_users",
@@ -67,6 +70,7 @@ public class Member {
         Integer registrationYear,
         Boolean isActive,
         String imageUrl,
+        String membershipType,
         Set<Activity> activities
     ) {
         this.id = id;
@@ -76,6 +80,7 @@ public class Member {
         this.registrationYear = registrationYear;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.membershipType = membershipType;
         this.activities = activities;
     }
 
@@ -133,6 +138,14 @@ public class Member {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getMembershipType() {
+        return membershipType;
+    }
+
+    public void setMembershipType(String membershipType) {
+        this.membershipType = membershipType;
     }
 
     public Set<Activity> getActivities() {

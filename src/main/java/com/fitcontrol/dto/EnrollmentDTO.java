@@ -8,22 +8,22 @@ public class EnrollmentDTO {
     private String activityName;
     private String activitySchedule;
     private LocalDateTime startDate;
-    private Long memberId;
-    private String memberName;
+    private Long userId;
+    private String userName;
     private Long teacherId;
     private String teacherName;
 
     public EnrollmentDTO() {}
 
     public EnrollmentDTO(Long activityId, String activityName, String activitySchedule,
-                         LocalDateTime startDate, Long memberId, String memberName,
+                         LocalDateTime startDate, Long userId, String userName,
                          Long teacherId, String teacherName) {
         this.activityId = activityId;
         this.activityName = activityName;
         this.activitySchedule = activitySchedule;
         this.startDate = startDate;
-        this.memberId = memberId;
-        this.memberName = memberName;
+        this.userId = userId;
+        this.userName = userName;
         this.teacherId = teacherId;
         this.teacherName = teacherName;
     }
@@ -40,11 +40,11 @@ public class EnrollmentDTO {
     public LocalDateTime getStartDate() { return startDate; }
     public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
 
-    public Long getMemberId() { return memberId; }
-    public void setMemberId(Long memberId) { this.memberId = memberId; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
-    public String getMemberName() { return memberName; }
-    public void setMemberName(String memberName) { this.memberName = memberName; }
+    public String getUserName() { return userName; }
+    public void setUserName(String userName) { this.userName = userName; }
 
     public Long getTeacherId() { return teacherId; }
     public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }

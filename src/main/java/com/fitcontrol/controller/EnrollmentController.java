@@ -16,16 +16,16 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
-    @PostMapping("/{activityId}/{memberId}")
+    @PostMapping("/{activityId}/{userId}")
     public ResponseEntity<EnrollmentDTO> enroll(@PathVariable Long activityId,
-                                                @PathVariable Long memberId) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(enrollmentService.enroll(activityId, memberId));
+                                                @PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(enrollmentService.enroll(activityId, userId));
     }
 
-    @DeleteMapping("/{activityId}/{memberId}")
+    @DeleteMapping("/{activityId}/{userId}")
     public ResponseEntity<Void> unenroll(@PathVariable Long activityId,
-                                         @PathVariable Long memberId) {
-        enrollmentService.unenroll(activityId, memberId);
+                                         @PathVariable Long userId) {
+        enrollmentService.unenroll(activityId, userId);
         return ResponseEntity.noContent().build();
     }
 }

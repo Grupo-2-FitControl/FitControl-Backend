@@ -118,7 +118,8 @@ public class MemberServiceImpl implements MemberService {
             member.getDni(),
             member.getRegistrationYear(),
             member.getIsActive(),
-            member.getImageUrl()
+            member.getImageUrl(),
+            member.getMembershipType()
         );
     }
 
@@ -131,6 +132,7 @@ public class MemberServiceImpl implements MemberService {
         member.setRegistrationYear(memberDTO.getRegistrationYear());
         member.setIsActive(memberDTO.getIsActive());
         member.setImageUrl(memberDTO.getImageUrl());
+        member.setMembershipType(memberDTO.getMembershipType());
         return member;
     }
 

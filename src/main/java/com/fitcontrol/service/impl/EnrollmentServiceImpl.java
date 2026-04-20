@@ -30,15 +30,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional
-    public EnrollmentDTO enroll(Long activityId, Long memberId) {
+    public EnrollmentDTO enroll(Long activityId, Long userId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         if (Boolean.FALSE.equals(member.getIsActive())) {
-            throw new BusinessRuleException("Member with id " + memberId + " is inactive and cannot enroll", 403);
+            throw new BusinessRuleException("User with id " + userId + " is inactive and cannot enroll", 403);
         }
 
         if (activity.getStartDate() == null || !activity.getStartDate().isAfter(LocalDateTime.now())) {
@@ -46,12 +46,12 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
 
         if (member.getActivities().contains(activity)) {
-            throw new BusinessRuleException("Member is already enrolled in this activity", 409);
+            throw new BusinessRuleException("User is already enrolled in this activity", 409);
         }
 
-        long futureCount = activityRepository.countFutureActivitiesForMember(memberId, LocalDateTime.now());
+        long futureCount = activityRepository.countFutureActivitiesForMember(userId, LocalDateTime.now());
         if (futureCount >= 3) {
-            throw new BusinessRuleException("Member cannot have more than 3 future activities enrolled", 409);
+            throw new BusinessRuleException("User cannot have more than 3 future activities enrolled", 409);
         }
 
         member.getActivities().add(activity);
@@ -62,15 +62,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional
-    public void unenroll(Long activityId, Long memberId) {
+    public void unenroll(Long activityId, Long userId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         if (!member.getActivities().contains(activity)) {
-            throw new BusinessRuleException("Member is not enrolled in this activity", 409);
+            throw new BusinessRuleException("User is not enrolled in this activity", 409);
         }
 
         member.getActivities().remove(activity);
@@ -79,9 +79,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ActivityDTO> findActivitiesByMember(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id: " + memberId));
+    public List<ActivityDTO> findActivitiesByUser(Long userId) {
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         return member.getActivities().stream()
                 .map(this::toActivityDTO)
@@ -115,8 +115,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private ActivityDTO toActivityDTO(Activity a) {
         return new ActivityDTO(
                 a.getId(),
+                a.getTitle(),
                 a.getName(),
                 a.getDescription(),
+                a.getPrice(),
+                a.getImageUrl(),
                 a.getSchedule(),
                 a.getCapacity(),
                 a.getIsActive(),
@@ -134,7 +137,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 m.getDni(),
                 m.getRegistrationYear(),
                 m.getIsActive(),
-                m.getImageUrl()
+                m.getImageUrl(),
+                m.getMembershipType()
         );
     }
 }

@@ -28,6 +28,9 @@ public class MemberDTO {
     @Size(max = 500, message = "La URL de la imagen no puede superar 500 caracteres")
     private String imageUrl;
 
+    @Size(max = 50, message = "El tipo de membresía no puede superar 50 caracteres")
+    private String membershipType;
+
     public MemberDTO() {
     }
 
@@ -38,7 +41,8 @@ public class MemberDTO {
         String dni,
         Integer registrationYear,
         Boolean isActive,
-        String imageUrl
+        String imageUrl,
+        String membershipType
     ) {
         this.id = id;
         this.name = name;
@@ -47,6 +51,7 @@ public class MemberDTO {
         this.registrationYear = registrationYear;
         this.isActive = isActive;
         this.imageUrl = imageUrl;
+        this.membershipType = membershipType;
     }
 
     public Long getId() {
@@ -103,5 +108,13 @@ public class MemberDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getMembershipType() {
+        return membershipType;
+    }
+
+    public void setMembershipType(String membershipType) {
+        this.membershipType = membershipType;
     }
 }

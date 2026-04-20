@@ -2,9 +2,12 @@ package com.fitcontrol.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -18,12 +21,21 @@ public class Activity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 150)
+    private String title;
+
     @NotBlank(message = "Activity name is required")
     @Column(nullable = false, length = 100)
     private String name;
 
     @Column(length = 255)
     private String description;
+
+    @Column(precision = 8, scale = 2)
+    private BigDecimal price;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
     @NotBlank(message = "Schedule is required")
     @Column(nullable = false, length = 100)
@@ -50,11 +62,15 @@ public class Activity {
 
     public Activity() {}
 
-    public Activity(Long id, String name, String description, String schedule,
-                    Integer capacity, Boolean isActive, LocalDateTime startDate, Teacher teacher) {
+    public Activity(Long id, String title, String name, String description, BigDecimal price,
+                    String imageUrl, String schedule, Integer capacity, Boolean isActive,
+                    LocalDateTime startDate, Teacher teacher) {
         this.id = id;
+        this.title = title;
         this.name = name;
         this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
         this.schedule = schedule;
         this.capacity = capacity;
         this.isActive = isActive;
@@ -65,11 +81,20 @@ public class Activity {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getSchedule() { return schedule; }
     public void setSchedule(String schedule) { this.schedule = schedule; }

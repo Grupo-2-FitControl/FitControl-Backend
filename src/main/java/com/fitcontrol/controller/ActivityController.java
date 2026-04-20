@@ -48,7 +48,7 @@ public class ActivityController {
         return ResponseEntity.ok(activityService.findById(id));
     }
 
-    @GetMapping("/{id}/members")
+    @GetMapping("/{id}/users")
     public ResponseEntity<List<MemberDTO>> getMembersByActivity(@PathVariable Long id) {
         return ResponseEntity.ok(enrollmentService.findMembersByActivity(id));
     }
