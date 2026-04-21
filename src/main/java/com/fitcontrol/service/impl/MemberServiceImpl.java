@@ -1,12 +1,15 @@
 package com.fitcontrol.service.impl;
 
-import com.fitcontrol.dto.MemberDTO;
+import com.fitcontrol.dto.member.MemberDTORequest;
+import com.fitcontrol.dto.member.MemberDTOResponse;
+import com.fitcontrol.dto.member.MemberMapper;
 import com.fitcontrol.exception.BusinessRuleException;
 import com.fitcontrol.exception.DuplicateResourceException;
 import com.fitcontrol.exception.ResourceNotFoundException;
 import com.fitcontrol.model.Member;
 import com.fitcontrol.repository.MemberRepository;
 import com.fitcontrol.service.MemberService;
+
 import java.time.Year;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -21,52 +24,47 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO createMember(MemberDTO memberDTO) {
-        validateRegistrationYear(memberDTO.getRegistrationYear());
-        String normalizedDni = normalizeDni(memberDTO.getDni());
+    public MemberDTOResponse createMember(MemberDTORequest dto) {
+        validateRegistrationYear(dto.registrationYear());
+        String normalizedDni = normalizeDni(dto.dni());
 
         if (memberRepository.existsByDni(normalizedDni)) {
             throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
         }
 
-        Member member = toEntity(memberDTO);
+        Member member = MemberMapper.dto2Entity(dto);
         member.setDni(normalizedDni);
-        if (member.getIsActive() == null) {
-            member.setIsActive(true);
-        }
 
-        Member savedMember = memberRepository.save(member);
-        return toDto(savedMember);
+        return MemberMapper.entity2DTO(memberRepository.save(member));
     }
 
     @Override
-    public MemberDTO getMemberById(Long id) {
+    public MemberDTOResponse getMemberById(Long id) {
         Member member = memberRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
-
-        return toDto(member);
+        return MemberMapper.entity2DTO(member);
     }
 
     @Override
-    public List<MemberDTO> getAllMembers() {
+    public List<MemberDTOResponse> getAllMembers() {
         return memberRepository.findAll()
             .stream()
-            .map(this::toDto)
+            .map(MemberMapper::entity2DTO)
             .toList();
     }
 
     @Override
-    public List<MemberDTO> getActiveMembers() {
+    public List<MemberDTOResponse> getActiveMembers() {
         return memberRepository.findByIsActiveTrue()
             .stream()
-            .map(this::toDto)
+            .map(MemberMapper::entity2DTO)
             .toList();
     }
 
     @Override
-    public MemberDTO updateMember(Long id, MemberDTO memberDTO) {
-        validateRegistrationYear(memberDTO.getRegistrationYear());
-        String normalizedDni = normalizeDni(memberDTO.getDni());
+    public MemberDTOResponse updateMember(Long id, MemberDTORequest dto) {
+        validateRegistrationYear(dto.registrationYear());
+        String normalizedDni = normalizeDni(dto.dni());
 
         Member existingMember = memberRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
@@ -76,18 +74,18 @@ public class MemberServiceImpl implements MemberService {
             throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
         }
 
-        existingMember.setName(memberDTO.getName());
-        existingMember.setLastName(memberDTO.getLastName());
+        existingMember.setName(dto.name());
+        existingMember.setLastName(dto.lastName());
         existingMember.setDni(normalizedDni);
-        existingMember.setRegistrationYear(memberDTO.getRegistrationYear());
-        existingMember.setImageUrl(memberDTO.getImageUrl());
+        existingMember.setRegistrationYear(dto.registrationYear());
+        existingMember.setImageUrl(dto.imageUrl());
+        existingMember.setMembershipType(dto.membershipType());
 
-        if (memberDTO.getIsActive() != null) {
-            existingMember.setIsActive(memberDTO.getIsActive());
+        if (dto.isActive() != null) {
+            existingMember.setIsActive(dto.isActive());
         }
 
-        Member savedMember = memberRepository.save(existingMember);
-        return toDto(savedMember);
+        return MemberMapper.entity2DTO(memberRepository.save(existingMember));
     }
 
     @Override
@@ -108,32 +106,6 @@ public class MemberServiceImpl implements MemberService {
         if (registrationYear == null || registrationYear < 1900 || registrationYear > currentYear) {
             throw new BusinessRuleException("El ano de alta debe estar entre 1900 y " + currentYear);
         }
-    }
-
-    private MemberDTO toDto(Member member) {
-        return new MemberDTO(
-            member.getId(),
-            member.getName(),
-            member.getLastName(),
-            member.getDni(),
-            member.getRegistrationYear(),
-            member.getIsActive(),
-            member.getImageUrl(),
-            member.getMembershipType()
-        );
-    }
-
-    private Member toEntity(MemberDTO memberDTO) {
-        Member member = new Member();
-        member.setId(memberDTO.getId());
-        member.setName(memberDTO.getName());
-        member.setLastName(memberDTO.getLastName());
-        member.setDni(memberDTO.getDni());
-        member.setRegistrationYear(memberDTO.getRegistrationYear());
-        member.setIsActive(memberDTO.getIsActive());
-        member.setImageUrl(memberDTO.getImageUrl());
-        member.setMembershipType(memberDTO.getMembershipType());
-        return member;
     }
 
     private String normalizeDni(String dni) {

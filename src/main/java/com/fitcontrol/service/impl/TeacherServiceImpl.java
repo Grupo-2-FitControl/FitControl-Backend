@@ -1,6 +1,8 @@
 package com.fitcontrol.service.impl;
 
-import com.fitcontrol.dto.TeacherDTO;
+import com.fitcontrol.dto.teacher.TeacherDTORequest;
+import com.fitcontrol.dto.teacher.TeacherDTOResponse;
+import com.fitcontrol.dto.teacher.TeacherMapper;
 import com.fitcontrol.exception.DuplicateResourceException;
 import com.fitcontrol.exception.ResourceNotFoundException;
 import com.fitcontrol.model.Teacher;
@@ -21,45 +23,45 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<TeacherDTO> findAll() {
+    public List<TeacherDTOResponse> findAll() {
         return teacherRepository.findAll()
-                .stream().map(this::toDTO).collect(Collectors.toList());
+                .stream().map(TeacherMapper::entity2DTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<TeacherDTO> findAllActive() {
+    public List<TeacherDTOResponse> findAllActive() {
         return teacherRepository.findByIsActiveTrue()
-                .stream().map(this::toDTO).collect(Collectors.toList());
+                .stream().map(TeacherMapper::entity2DTO).collect(Collectors.toList());
     }
 
     @Override
-    public TeacherDTO findById(Long id) {
+    public TeacherDTOResponse findById(Long id) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
-        return toDTO(teacher);
+        return TeacherMapper.entity2DTO(teacher);
     }
 
     @Override
-    public TeacherDTO create(TeacherDTO dto) {
-        if (teacherRepository.existsByDni(dto.getDni()))
+    public TeacherDTOResponse create(TeacherDTORequest dto) {
+        if (teacherRepository.existsByDni(dto.dni()))
             throw new DuplicateResourceException("A teacher with that DNI already exists");
 
-        Teacher teacher = toEntity(dto);
-        return toDTO(teacherRepository.save(teacher));
+        Teacher teacher = TeacherMapper.dto2Entity(dto);
+        return TeacherMapper.entity2DTO(teacherRepository.save(teacher));
     }
 
     @Override
-    public TeacherDTO update(Long id, TeacherDTO dto) {
+    public TeacherDTOResponse update(Long id, TeacherDTORequest dto) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
 
-        teacher.setName(dto.getName());
-        teacher.setDni(dto.getDni());
-        teacher.setHiringYear(dto.getHiringYear());
-        teacher.setIsActive(dto.getIsActive());
-        teacher.setImageUrl(dto.getImageUrl());
+        teacher.setName(dto.name());
+        teacher.setDni(dto.dni());
+        teacher.setHiringYear(dto.hiringYear());
+        teacher.setIsActive(dto.isActive());
+        teacher.setImageUrl(dto.imageUrl());
 
-        return toDTO(teacherRepository.save(teacher));
+        return TeacherMapper.entity2DTO(teacherRepository.save(teacher));
     }
 
     @Override
@@ -67,20 +69,5 @@ public class TeacherServiceImpl implements TeacherService {
         if (!teacherRepository.existsById(id))
             throw new ResourceNotFoundException("Teacher not found with id: " + id);
         teacherRepository.deleteById(id);
-    }
-
-    private TeacherDTO toDTO(Teacher t) {
-        return new TeacherDTO(t.getId(), t.getName(), t.getDni(),
-                t.getHiringYear(), t.getIsActive(), t.getImageUrl());
-    }
-
-    private Teacher toEntity(TeacherDTO dto) {
-        Teacher t = new Teacher();
-        t.setName(dto.getName());
-        t.setDni(dto.getDni());
-        t.setHiringYear(dto.getHiringYear());
-        t.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
-        t.setImageUrl(dto.getImageUrl());
-        return t;
     }
 }

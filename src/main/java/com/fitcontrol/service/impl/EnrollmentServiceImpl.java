@@ -1,8 +1,11 @@
 package com.fitcontrol.service.impl;
 
-import com.fitcontrol.dto.ActivityDTO;
-import com.fitcontrol.dto.EnrollmentDTO;
-import com.fitcontrol.dto.MemberDTO;
+import com.fitcontrol.dto.activity.ActivityDTOResponse;
+import com.fitcontrol.dto.activity.ActivityMapper;
+import com.fitcontrol.dto.enrollment.EnrollmentDTOResponse;
+import com.fitcontrol.dto.enrollment.EnrollmentMapper;
+import com.fitcontrol.dto.member.MemberDTOResponse;
+import com.fitcontrol.dto.member.MemberMapper;
 import com.fitcontrol.exception.BusinessRuleException;
 import com.fitcontrol.exception.ResourceNotFoundException;
 import com.fitcontrol.model.Activity;
@@ -30,7 +33,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional
-    public EnrollmentDTO enroll(Long activityId, Long userId) {
+    public EnrollmentDTOResponse enroll(Long activityId, Long userId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
 
@@ -57,7 +60,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         member.getActivities().add(activity);
         memberRepository.save(member);
 
-        return toEnrollmentDTO(activity, member);
+        return EnrollmentMapper.entity2DTO(activity, member);
     }
 
     @Override
@@ -79,66 +82,23 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ActivityDTO> findActivitiesByUser(Long userId) {
+    public List<ActivityDTOResponse> findActivitiesByUser(Long userId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         return member.getActivities().stream()
-                .map(this::toActivityDTO)
+                .map(ActivityMapper::entity2DTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MemberDTO> findMembersByActivity(Long activityId) {
+    public List<MemberDTOResponse> findMembersByActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
 
         return activity.getMembers().stream()
-                .map(this::toMemberDTO)
+                .map(MemberMapper::entity2DTO)
                 .collect(Collectors.toList());
-    }
-
-    private EnrollmentDTO toEnrollmentDTO(Activity a, Member m) {
-        return new EnrollmentDTO(
-                a.getId(),
-                a.getName(),
-                a.getSchedule(),
-                a.getStartDate(),
-                m.getId(),
-                m.getName(),
-                a.getTeacher().getId(),
-                a.getTeacher().getName()
-        );
-    }
-
-    private ActivityDTO toActivityDTO(Activity a) {
-        return new ActivityDTO(
-                a.getId(),
-                a.getTitle(),
-                a.getName(),
-                a.getDescription(),
-                a.getPrice(),
-                a.getImageUrl(),
-                a.getSchedule(),
-                a.getCapacity(),
-                a.getIsActive(),
-                a.getStartDate(),
-                a.getTeacher().getId(),
-                a.getTeacher().getName()
-        );
-    }
-
-    private MemberDTO toMemberDTO(Member m) {
-        return new MemberDTO(
-                m.getId(),
-                m.getName(),
-                m.getLastName(),
-                m.getDni(),
-                m.getRegistrationYear(),
-                m.getIsActive(),
-                m.getImageUrl(),
-                m.getMembershipType()
-        );
     }
 }
