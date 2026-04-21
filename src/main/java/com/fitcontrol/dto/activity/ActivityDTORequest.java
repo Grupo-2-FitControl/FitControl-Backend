@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public record ActivityDTORequest(
         String title,
 
-        @NotBlank(message = "Activity name is required")
+        @NotBlank(message = "El nombre de la actividad es obligatorio")
         String name,
 
         String description,
@@ -21,16 +21,16 @@ public record ActivityDTORequest(
 
         String imageUrl,
 
-        @NotBlank(message = "Schedule is required")
+        @NotBlank(message = "El horario de la actividad es obligatorio")
         String schedule,
 
-        @NotNull(message = "Capacity is required")
-        @Min(value = 1, message = "Capacity must be at least 1")
+        @NotNull(message = "El aforo de la actividad es obligatorio")
+        @Min(value = 1, message = "El aforo debe ser de al menos 1 persona")
         Integer capacity,
 
         Boolean isActive,
         LocalDateTime startDate,
 
-        @NotNull(message = "Teacher ID is required")
+        @NotNull(message = "Debes asignar un profesor a la actividad")
         Long teacherId
 ) {}
