@@ -11,6 +11,7 @@ import com.fitcontrol.repository.TeacherRepository;
 import com.fitcontrol.service.ActivityService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,12 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<ActivityDTO> findAllActive() {
         return activityRepository.findByIsActiveTrue()
+                .stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ActivityDTO> findFutureActivities() {
+        return activityRepository.findFutureActivities(LocalDateTime.now())
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -77,11 +84,15 @@ public class ActivityServiceImpl implements ActivityService {
         if (!teacher.getIsActive())
             throw new BusinessRuleException("Cannot assign an inactive teacher to an activity");
 
+        activity.setTitle(dto.getTitle());
         activity.setName(dto.getName());
         activity.setDescription(dto.getDescription());
+        activity.setPrice(dto.getPrice());
+        activity.setImageUrl(dto.getImageUrl());
         activity.setSchedule(dto.getSchedule());
         activity.setCapacity(dto.getCapacity());
         activity.setIsActive(dto.getIsActive());
+        activity.setStartDate(dto.getStartDate());
         activity.setTeacher(teacher);
 
         return toDTO(activityRepository.save(activity));
@@ -97,11 +108,15 @@ public class ActivityServiceImpl implements ActivityService {
     private ActivityDTO toDTO(Activity a) {
         return new ActivityDTO(
                 a.getId(),
+                a.getTitle(),
                 a.getName(),
                 a.getDescription(),
+                a.getPrice(),
+                a.getImageUrl(),
                 a.getSchedule(),
                 a.getCapacity(),
                 a.getIsActive(),
+                a.getStartDate(),
                 a.getTeacher().getId(),
                 a.getTeacher().getName()
         );
@@ -109,11 +124,15 @@ public class ActivityServiceImpl implements ActivityService {
 
     private Activity toEntity(ActivityDTO dto, Teacher teacher) {
         Activity a = new Activity();
+        a.setTitle(dto.getTitle());
         a.setName(dto.getName());
         a.setDescription(dto.getDescription());
+        a.setPrice(dto.getPrice());
+        a.setImageUrl(dto.getImageUrl());
         a.setSchedule(dto.getSchedule());
         a.setCapacity(dto.getCapacity());
         a.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        a.setStartDate(dto.getStartDate());
         a.setTeacher(teacher);
         return a;
     }

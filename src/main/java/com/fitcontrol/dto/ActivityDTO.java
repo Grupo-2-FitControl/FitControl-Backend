@@ -1,17 +1,28 @@
 package com.fitcontrol.dto;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class ActivityDTO {
 
     private Long id;
 
+    private String title;
+
     @NotBlank(message = "Activity name is required")
     private String name;
 
     private String description;
+
+    @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")
+    private BigDecimal price;
+
+    private String imageUrl;
 
     @NotBlank(message = "Schedule is required")
     private String schedule;
@@ -22,6 +33,8 @@ public class ActivityDTO {
 
     private Boolean isActive;
 
+    private LocalDateTime startDate;
+
     @NotNull(message = "Teacher ID is required")
     private Long teacherId;
 
@@ -29,14 +42,19 @@ public class ActivityDTO {
 
     public ActivityDTO() {}
 
-    public ActivityDTO(Long id, String name, String description, String schedule,
-                       Integer capacity, Boolean isActive, Long teacherId, String teacherName) {
+    public ActivityDTO(Long id, String title, String name, String description, BigDecimal price,
+                       String imageUrl, String schedule, Integer capacity, Boolean isActive,
+                       LocalDateTime startDate, Long teacherId, String teacherName) {
         this.id = id;
+        this.title = title;
         this.name = name;
         this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
         this.schedule = schedule;
         this.capacity = capacity;
         this.isActive = isActive;
+        this.startDate = startDate;
         this.teacherId = teacherId;
         this.teacherName = teacherName;
     }
@@ -44,11 +62,20 @@ public class ActivityDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public BigDecimal getPrice() { return price; }
+    public void setPrice(BigDecimal price) { this.price = price; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public String getSchedule() { return schedule; }
     public void setSchedule(String schedule) { this.schedule = schedule; }
@@ -58,6 +85,9 @@ public class ActivityDTO {
 
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+
+    public LocalDateTime getStartDate() { return startDate; }
+    public void setStartDate(LocalDateTime startDate) { this.startDate = startDate; }
 
     public Long getTeacherId() { return teacherId; }
     public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }

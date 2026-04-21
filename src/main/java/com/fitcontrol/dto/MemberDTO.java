@@ -1,68 +1,40 @@
-package com.fitcontrol.model;
+package com.fitcontrol.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.validation.constraints.Size;
+public class MemberDTO {
 
-@Entity
-@Table(name = "users")
-public class Member {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Column(nullable = false, length = 100)
+    @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
     private String name;
 
     @NotBlank(message = "Los apellidos son obligatorios")
-    @Column(name = "last_name", nullable = false, length = 150)
+    @Size(max = 150, message = "Los apellidos no pueden superar 150 caracteres")
     private String lastName;
 
     @NotBlank(message = "El DNI es obligatorio")
     @Pattern(regexp = "^[0-9]{8}[A-Z]$", message = "DNI invalido")
-    @Column(nullable = false, unique = true, length = 9)
     private String dni;
 
     @NotNull(message = "El ano de alta es obligatorio")
-    @Column(name = "registration_year", nullable = false)
     private Integer registrationYear;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
-    @Column(name = "image_url", length = 500)
+    @Size(max = 500, message = "La URL de la imagen no puede superar 500 caracteres")
     private String imageUrl;
 
-    @Column(name = "membership_type", length = 50)
+    @Size(max = 50, message = "El tipo de membresía no puede superar 50 caracteres")
     private String membershipType;
 
-    @ManyToMany
-    @JoinTable(
-        name = "activity_users",
-        joinColumns = @JoinColumn(name = "member_id"),
-        inverseJoinColumns = @JoinColumn(name = "activity_id")
-    )
-    @JsonIgnore
-    private Set<Activity> activities = new HashSet<>();
-
-    public Member() {
+    public MemberDTO() {
     }
 
-    public Member(
+    public MemberDTO(
         Long id,
         String name,
         String lastName,
@@ -70,8 +42,7 @@ public class Member {
         Integer registrationYear,
         Boolean isActive,
         String imageUrl,
-        String membershipType,
-        Set<Activity> activities
+        String membershipType
     ) {
         this.id = id;
         this.name = name;
@@ -81,7 +52,6 @@ public class Member {
         this.isActive = isActive;
         this.imageUrl = imageUrl;
         this.membershipType = membershipType;
-        this.activities = activities;
     }
 
     public Long getId() {
@@ -146,13 +116,5 @@ public class Member {
 
     public void setMembershipType(String membershipType) {
         this.membershipType = membershipType;
-    }
-
-    public Set<Activity> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(Set<Activity> activities) {
-        this.activities = activities;
     }
 }
