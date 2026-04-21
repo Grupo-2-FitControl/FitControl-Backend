@@ -55,10 +55,14 @@ public class TeacherServiceImpl implements TeacherService {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + id));
 
+        boolean dniChanged = !teacher.getDni().equals(dto.dni());
+        if (dniChanged && teacherRepository.existsByDni(dto.dni()))
+            throw new DuplicateResourceException("Ya existe un profesor registrado con el DNI " + dto.dni());
+
         teacher.setName(dto.name());
         teacher.setDni(dto.dni());
         teacher.setHiringYear(dto.hiringYear());
-        teacher.setIsActive(dto.isActive());
+        teacher.setIsActive(dto.isActive() != null ? dto.isActive() : teacher.getIsActive());
         teacher.setImageUrl(dto.imageUrl());
 
         return TeacherMapper.entity2DTO(teacherRepository.save(teacher));

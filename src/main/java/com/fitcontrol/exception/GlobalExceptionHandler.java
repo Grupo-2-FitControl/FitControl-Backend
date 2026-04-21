@@ -2,6 +2,7 @@ package com.fitcontrol.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -111,6 +112,18 @@ public class GlobalExceptionHandler {
         return buildResponse(
                 HttpStatus.BAD_REQUEST,
                 "El valor \"" + ex.getValue() + "\" no es válido para el parámetro \"" + ex.getName() + "\". Se esperaba un valor de tipo " + ex.getRequiredType().getSimpleName() + ".",
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(
+            DataIntegrityViolationException ex, HttpServletRequest request) {
+
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                "No se puede completar la operación porque incumple una restricción de integridad de datos. Comprueba que no existan duplicados.",
                 request.getRequestURI(),
                 null
         );

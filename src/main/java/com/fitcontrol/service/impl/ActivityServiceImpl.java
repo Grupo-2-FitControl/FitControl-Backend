@@ -94,7 +94,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setImageUrl(dto.imageUrl());
         activity.setSchedule(dto.schedule());
         activity.setCapacity(dto.capacity());
-        activity.setIsActive(dto.isActive());
+        activity.setIsActive(dto.isActive() != null ? dto.isActive() : activity.getIsActive());
         activity.setStartDate(dto.startDate());
         activity.setTeacher(teacher);
 
