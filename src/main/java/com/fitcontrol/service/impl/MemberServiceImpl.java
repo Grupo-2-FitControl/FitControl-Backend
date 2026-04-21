@@ -29,7 +29,7 @@ public class MemberServiceImpl implements MemberService {
         String normalizedDni = normalizeDni(dto.dni());
 
         if (memberRepository.existsByDni(normalizedDni)) {
-            throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
+            throw new DuplicateResourceException("Ya existe un socio registrado con el DNI " + normalizedDni);
         }
 
         Member member = MemberMapper.dto2Entity(dto);
@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberDTOResponse getMemberById(Long id) {
         Member member = memberRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + id));
         return MemberMapper.entity2DTO(member);
     }
 
@@ -67,11 +67,11 @@ public class MemberServiceImpl implements MemberService {
         String normalizedDni = normalizeDni(dto.dni());
 
         Member existingMember = memberRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + id));
 
         boolean dniChanged = !existingMember.getDni().equals(normalizedDni);
         if (dniChanged && memberRepository.existsByDni(normalizedDni)) {
-            throw new DuplicateResourceException("Ya existe un miembro con DNI " + normalizedDni);
+            throw new DuplicateResourceException("Ya existe un socio registrado con el DNI " + normalizedDni);
         }
 
         existingMember.setName(dto.name());
@@ -91,10 +91,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void deleteMember(Long id) {
         Member existingMember = memberRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Miembro no encontrado con id " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + id));
 
         if (Boolean.FALSE.equals(existingMember.getIsActive())) {
-            throw new BusinessRuleException("El miembro con id " + id + " ya esta inactivo");
+            throw new BusinessRuleException("El socio con id " + id + " ya figura como inactivo en el sistema");
         }
 
         existingMember.setIsActive(false);
@@ -104,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
     private void validateRegistrationYear(Integer registrationYear) {
         int currentYear = Year.now().getValue();
         if (registrationYear == null || registrationYear < 1900 || registrationYear > currentYear) {
-            throw new BusinessRuleException("El ano de alta debe estar entre 1900 y " + currentYear);
+            throw new BusinessRuleException("El año de alta debe estar entre 1900 y " + currentYear);
         }
     }
 

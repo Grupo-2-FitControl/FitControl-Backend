@@ -35,26 +35,34 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public EnrollmentDTOResponse enroll(Long activityId, Long userId) {
         Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + activityId));
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + userId));
 
         if (Boolean.FALSE.equals(member.getIsActive())) {
-            throw new BusinessRuleException("User with id " + userId + " is inactive and cannot enroll", 403);
+            throw new BusinessRuleException(
+                "El socio " + member.getName() + " " + member.getLastName() + " no está activo. " +
+                "Solo los socios con la cuota al día pueden inscribirse en actividades.", 403);
         }
 
         if (activity.getStartDate() == null || !activity.getStartDate().isAfter(LocalDateTime.now())) {
-            throw new BusinessRuleException("Only future activities allow enrollment", 409);
+            throw new BusinessRuleException(
+                "La actividad \"" + activity.getName() + "\" ya ha comenzado o no tiene fecha asignada. " +
+                "Solo se puede inscribir en actividades futuras.", 409);
         }
 
         if (member.getActivities().contains(activity)) {
-            throw new BusinessRuleException("User is already enrolled in this activity", 409);
+            throw new BusinessRuleException(
+                "El socio " + member.getName() + " " + member.getLastName() +
+                " ya está inscrito en la actividad \"" + activity.getName() + "\".", 409);
         }
 
         long futureCount = activityRepository.countFutureActivitiesForMember(userId, LocalDateTime.now());
         if (futureCount >= 3) {
-            throw new BusinessRuleException("User cannot have more than 3 future activities enrolled", 409);
+            throw new BusinessRuleException(
+                "El socio " + member.getName() + " " + member.getLastName() +
+                " ya tiene 3 actividades futuras contratadas. Debe cancelar alguna antes de poder inscribirse en una nueva.", 409);
         }
 
         member.getActivities().add(activity);
@@ -67,13 +75,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional
     public void unenroll(Long activityId, Long userId) {
         Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + activityId));
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + userId));
 
         if (!member.getActivities().contains(activity)) {
-            throw new BusinessRuleException("User is not enrolled in this activity", 409);
+            throw new BusinessRuleException(
+                "El socio " + member.getName() + " " + member.getLastName() +
+                " no figura inscrito en la actividad \"" + activity.getName() + "\".", 409);
         }
 
         member.getActivities().remove(activity);
@@ -84,7 +94,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional(readOnly = true)
     public List<ActivityDTOResponse> findActivitiesByUser(Long userId) {
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún socio con id: " + userId));
 
         return member.getActivities().stream()
                 .map(ActivityMapper::entity2DTO)
@@ -95,7 +105,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional(readOnly = true)
     public List<MemberDTOResponse> findMembersByActivity(Long activityId) {
         Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + activityId));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + activityId));
 
         return activity.getMembers().stream()
                 .map(MemberMapper::entity2DTO)

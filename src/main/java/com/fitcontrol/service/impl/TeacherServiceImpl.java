@@ -37,14 +37,14 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherDTOResponse findById(Long id) {
         Teacher teacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + id));
         return TeacherMapper.entity2DTO(teacher);
     }
 
     @Override
     public TeacherDTOResponse create(TeacherDTORequest dto) {
         if (teacherRepository.existsByDni(dto.dni()))
-            throw new DuplicateResourceException("A teacher with that DNI already exists");
+            throw new DuplicateResourceException("Ya existe un profesor registrado con el DNI " + dto.dni());
 
         Teacher teacher = TeacherMapper.dto2Entity(dto);
         return TeacherMapper.entity2DTO(teacherRepository.save(teacher));
@@ -53,7 +53,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public TeacherDTOResponse update(Long id, TeacherDTORequest dto) {
         Teacher teacher = teacherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + id));
 
         teacher.setName(dto.name());
         teacher.setDni(dto.dni());
@@ -67,7 +67,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public void delete(Long id) {
         if (!teacherRepository.existsById(id))
-            throw new ResourceNotFoundException("Teacher not found with id: " + id);
+            throw new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + id);
         teacherRepository.deleteById(id);
     }
 }

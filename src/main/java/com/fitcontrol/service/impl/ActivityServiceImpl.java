@@ -49,7 +49,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public List<ActivityDTOResponse> findByTeacher(Long teacherId) {
         if (!teacherRepository.existsById(teacherId))
-            throw new ResourceNotFoundException("Teacher not found with id: " + teacherId);
+            throw new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + teacherId);
         return activityRepository.findByTeacherId(teacherId)
                 .stream().map(ActivityMapper::entity2DTO).collect(Collectors.toList());
     }
@@ -57,20 +57,20 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public ActivityDTOResponse findById(Long id) {
         Activity activity = activityRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + id));
         return ActivityMapper.entity2DTO(activity);
     }
 
     @Override
     public ActivityDTOResponse create(ActivityDTORequest dto) {
         Teacher teacher = teacherRepository.findById(dto.teacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + dto.teacherId()));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + dto.teacherId()));
 
         if (!teacher.getIsActive())
-            throw new BusinessRuleException("Cannot assign an inactive teacher to an activity");
+            throw new BusinessRuleException("No se puede asignar la actividad al profesor " + teacher.getName() + " porque no está contratado actualmente");
 
         if (activityRepository.existsByNameAndTeacherId(dto.name(), dto.teacherId()))
-            throw new DuplicateResourceException("This teacher already has an activity with that name");
+            throw new DuplicateResourceException("El profesor " + teacher.getName() + " ya imparte una actividad con el nombre \"" + dto.name() + "\"");
 
         Activity activity = ActivityMapper.dto2Entity(dto, teacher);
         return ActivityMapper.entity2DTO(activityRepository.save(activity));
@@ -79,13 +79,13 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public ActivityDTOResponse update(Long id, ActivityDTORequest dto) {
         Activity activity = activityRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Activity not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + id));
 
         Teacher teacher = teacherRepository.findById(dto.teacherId())
-                .orElseThrow(() -> new ResourceNotFoundException("Teacher not found with id: " + dto.teacherId()));
+                .orElseThrow(() -> new ResourceNotFoundException("No se ha encontrado ningún profesor con id: " + dto.teacherId()));
 
         if (!teacher.getIsActive())
-            throw new BusinessRuleException("Cannot assign an inactive teacher to an activity");
+            throw new BusinessRuleException("No se puede asignar la actividad al profesor " + teacher.getName() + " porque no está contratado actualmente");
 
         activity.setTitle(dto.title());
         activity.setName(dto.name());
@@ -104,7 +104,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void delete(Long id) {
         if (!activityRepository.existsById(id))
-            throw new ResourceNotFoundException("Activity not found with id: " + id);
+            throw new ResourceNotFoundException("No se ha encontrado ninguna actividad con id: " + id);
         activityRepository.deleteById(id);
     }
 }
