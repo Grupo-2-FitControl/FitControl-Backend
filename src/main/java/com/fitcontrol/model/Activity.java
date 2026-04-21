@@ -24,7 +24,7 @@ public class Activity {
     @Column(length = 150)
     private String title;
 
-    @NotBlank(message = "Activity name is required")
+    @NotBlank(message = "El nombre de la actividad es obligatorio")
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -37,12 +37,12 @@ public class Activity {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
-    @NotBlank(message = "Schedule is required")
+    @NotBlank(message = "El horario de la actividad es obligatorio")
     @Column(nullable = false, length = 100)
     private String schedule;
 
-    @NotNull(message = "Capacity is required")
-    @Min(value = 1, message = "Capacity must be at least 1")
+    @NotNull(message = "El aforo de la actividad es obligatorio")
+    @Min(value = 1, message = "El aforo debe ser de al menos 1 persona")
     @Column(nullable = false)
     private Integer capacity;
 
