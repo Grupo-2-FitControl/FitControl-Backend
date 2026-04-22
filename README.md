@@ -234,3 +234,84 @@ El handler global (`GlobalExceptionHandler`) devuelve respuestas consistentes en
   }
 }
 ```
+
+---
+
+## Verificación de errores
+
+Peticiones para comprobar que cada excepción devuelve la respuesta correcta.
+
+### ResourceNotFoundException — 404
+
+```http
+GET  http://localhost:8080/api/users/9999
+GET  http://localhost:8080/api/teachers/9999
+GET  http://localhost:8080/api/activities/9999
+DELETE http://localhost:8080/api/teachers/9999
+POST http://localhost:8080/api/enrollments/9999/1
+POST http://localhost:8080/api/enrollments/1/9999
+```
+
+### DuplicateResourceException — 409
+
+Crear dos socios con el mismo DNI:
+
+```http
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{ "name": "Carlos", "lastName": "López", "dni": "12345678A", "registrationYear": 2022 }
+```
+```http
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{ "name": "Otro", "lastName": "Socio", "dni": "12345678A", "registrationYear": 2023 }
+```
+
+Lo mismo aplica para `POST /api/teachers` con DNI repetido.
+
+### BusinessRuleException — 403 / 409
+
+**Socio inactivo intenta inscribirse (403):**
+```http
+POST http://localhost:8080/api/enrollments/{activityId}/{idSocioInactivo}
+```
+
+**Actividad ya comenzada o sin fecha (409):**
+```http
+POST http://localhost:8080/api/enrollments/{activityIdPasada}/{userId}
+```
+
+**Inscripción duplicada — llamar dos veces seguidas (409):**
+```http
+POST http://localhost:8080/api/enrollments/1/1
+POST http://localhost:8080/api/enrollments/1/1
+```
+
+**Socio con 3 actividades futuras — cuarta inscripción (409):**
+```http
+POST http://localhost:8080/api/enrollments/1/1
+POST http://localhost:8080/api/enrollments/2/1
+POST http://localhost:8080/api/enrollments/3/1
+POST http://localhost:8080/api/enrollments/4/1
+```
+
+**Cancelar inscripción inexistente (409):**
+```http
+DELETE http://localhost:8080/api/enrollments/1/1
+```
+_(sin haber inscrito antes al socio)_
+
+**Asignar actividad a profesor inactivo (409):**
+```http
+POST http://localhost:8080/api/activities
+Content-Type: application/json
+
+{ "name": "Pilates", "schedule": "Martes 18:00", "capacity": 15, "teacherId": {idProfesorInactivo} }
+```
+
+**Dar de baja a un socio ya inactivo (409):**
+```http
+DELETE http://localhost:8080/api/users/{idSocioYaInactivo}
+```
