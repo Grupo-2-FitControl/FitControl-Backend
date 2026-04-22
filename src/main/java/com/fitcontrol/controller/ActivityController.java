@@ -2,6 +2,7 @@ package com.fitcontrol.controller;
 
 import com.fitcontrol.dto.activity.ActivityDTORequest;
 import com.fitcontrol.dto.activity.ActivityDTOResponse;
+import com.fitcontrol.dto.enrollment.EnrollmentDTOResponse;
 import com.fitcontrol.dto.member.MemberDTOResponse;
 import com.fitcontrol.service.ActivityService;
 import com.fitcontrol.service.EnrollmentService;
@@ -52,6 +53,17 @@ public class ActivityController {
     @GetMapping("/{id}/users")
     public ResponseEntity<List<MemberDTOResponse>> getMembersByActivity(@PathVariable Long id) {
         return ResponseEntity.ok(enrollmentService.findMembersByActivity(id));
+    }
+
+    @PostMapping("/{id}/users/{userId}")
+    public ResponseEntity<EnrollmentDTOResponse> enrollUser(@PathVariable Long id, @PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(enrollmentService.enroll(id, userId));
+    }
+
+    @DeleteMapping("/{id}/users/{userId}")
+    public ResponseEntity<Void> unenrollUser(@PathVariable Long id, @PathVariable Long userId) {
+        enrollmentService.unenroll(id, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping
