@@ -15,5 +15,6 @@ public record ActivityDTOResponse(
         Boolean isActive,
         LocalDateTime startDate,
         Long teacherId,
-        String teacherName
+        String teacherName,
+        Integer enrolledCount
 ) {}

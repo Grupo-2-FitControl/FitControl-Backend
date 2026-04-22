@@ -33,7 +33,8 @@ public class ActivityMapper {
                 activity.getIsActive(),
                 activity.getStartDate(),
                 activity.getTeacher().getId(),
-                activity.getTeacher().getName()
+                activity.getTeacher().getName(),
+                activity.getMembers().size()
         );
     }
 }
