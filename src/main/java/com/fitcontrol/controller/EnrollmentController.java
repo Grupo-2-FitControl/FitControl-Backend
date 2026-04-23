@@ -1,6 +1,6 @@
 package com.fitcontrol.controller;
 
-import com.fitcontrol.dto.EnrollmentDTO;
+import com.fitcontrol.dto.enrollment.EnrollmentDTOResponse;
 import com.fitcontrol.service.EnrollmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,8 @@ public class EnrollmentController {
     }
 
     @PostMapping("/{activityId}/{userId}")
-    public ResponseEntity<EnrollmentDTO> enroll(@PathVariable Long activityId,
-                                                @PathVariable Long userId) {
+    public ResponseEntity<EnrollmentDTOResponse> enroll(@PathVariable Long activityId,
+                                                        @PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(enrollmentService.enroll(activityId, userId));
     }
 
