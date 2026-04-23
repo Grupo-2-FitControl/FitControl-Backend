@@ -11,4 +11,5 @@ public interface EnrollmentService {
     void unenroll(Long activityId, Long userId);
     List<ActivityDTO> findActivitiesByUser(Long userId);
     List<MemberDTO> findMembersByActivity(Long activityId);
+    ActivityDTO enrollUserInActivity(Long userId, Long activityId);
 }

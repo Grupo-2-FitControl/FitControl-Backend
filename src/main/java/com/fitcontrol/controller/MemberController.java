@@ -68,4 +68,11 @@ public class MemberController {
     public ResponseEntity<List<ActivityDTO>> getActivitiesByUser(@PathVariable Long id) {
         return ResponseEntity.ok(enrollmentService.findActivitiesByUser(id));
     }
+
+    @PostMapping("/{userId}/activities/{activityId}")
+    public ResponseEntity<ActivityDTO> enrollUserInActivity(
+            @PathVariable Long userId,
+            @PathVariable Long activityId) {
+        return ResponseEntity.ok(enrollmentService.enrollUserInActivity(userId, activityId));
+    }
 }

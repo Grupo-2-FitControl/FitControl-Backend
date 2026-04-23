@@ -40,6 +40,8 @@ public class ActivityDTO {
 
     private String teacherName;
 
+    private Integer enrolledCount;
+
     public ActivityDTO() {}
 
     public ActivityDTO(Long id, String title, String name, String description, BigDecimal price,
@@ -94,4 +96,7 @@ public class ActivityDTO {
 
     public String getTeacherName() { return teacherName; }
     public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
+
+    public Integer getEnrolledCount() { return enrolledCount; }
+    public void setEnrolledCount(Integer enrolledCount) { this.enrolledCount = enrolledCount; }
 }
