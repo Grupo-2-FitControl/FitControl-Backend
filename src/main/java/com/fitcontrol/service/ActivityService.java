@@ -1,15 +1,17 @@
 package com.fitcontrol.service;
 
-import com.fitcontrol.dto.ActivityDTO;
+import com.fitcontrol.dto.activity.ActivityDTORequest;
+import com.fitcontrol.dto.activity.ActivityDTOResponse;
 
 import java.util.List;
 
 public interface ActivityService {
-    List<ActivityDTO> findAll();
-    List<ActivityDTO> findAllActive();
-    List<ActivityDTO> findByTeacher(Long teacherId);
-    ActivityDTO findById(Long id);
-    ActivityDTO create(ActivityDTO dto);
-    ActivityDTO update(Long id, ActivityDTO dto);
+    List<ActivityDTOResponse> findAll();
+    List<ActivityDTOResponse> findAllActive();
+    List<ActivityDTOResponse> findFutureActivities();
+    List<ActivityDTOResponse> findByTeacher(Long teacherId);
+    ActivityDTOResponse findById(Long id);
+    ActivityDTOResponse create(ActivityDTORequest dto);
+    ActivityDTOResponse update(Long id, ActivityDTORequest dto);
     void delete(Long id);
 }
