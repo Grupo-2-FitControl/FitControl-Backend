@@ -7,6 +7,7 @@ import com.fitcontrol.exception.ResourceNotFoundException;
 import com.fitcontrol.model.Activity;
 import com.fitcontrol.model.Teacher;
 import com.fitcontrol.repository.ActivityRepository;
+import com.fitcontrol.repository.MemberRepository;
 import com.fitcontrol.repository.TeacherRepository;
 import com.fitcontrol.service.ActivityService;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,12 @@ public class ActivityServiceImpl implements ActivityService {
 
     private final ActivityRepository activityRepository;
     private final TeacherRepository teacherRepository;
+    private final MemberRepository memberRepository;
 
-    public ActivityServiceImpl(ActivityRepository activityRepository, TeacherRepository teacherRepository) {
+    public ActivityServiceImpl(ActivityRepository activityRepository, TeacherRepository teacherRepository, MemberRepository memberRepository) {
         this.activityRepository = activityRepository;
         this.teacherRepository = teacherRepository;
+        this.memberRepository = memberRepository;
     }
 
     @Override
@@ -106,7 +109,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     private ActivityDTO toDTO(Activity a) {
-        return new ActivityDTO(
+        int enrolledCount = memberRepository.findMembersByActivityId(a.getId()).size();
+        ActivityDTO dto = new ActivityDTO(
                 a.getId(),
                 a.getTitle(),
                 a.getName(),
@@ -120,6 +124,8 @@ public class ActivityServiceImpl implements ActivityService {
                 a.getTeacher().getId(),
                 a.getTeacher().getName()
         );
+        dto.setEnrolledCount(enrolledCount);
+        return dto;
     }
 
     private Activity toEntity(ActivityDTO dto, Teacher teacher) {

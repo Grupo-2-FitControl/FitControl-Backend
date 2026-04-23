@@ -53,6 +53,18 @@ public class ActivityController {
         return ResponseEntity.ok(enrollmentService.findMembersByActivity(id));
     }
 
+    @PostMapping("/{activityId}/users/{userId}")
+    public ResponseEntity<Void> enrollUser(@PathVariable Long activityId, @PathVariable Long userId) {
+        enrollmentService.enroll(activityId, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{activityId}/users/{userId}")
+    public ResponseEntity<Void> unenrollUser(@PathVariable Long activityId, @PathVariable Long userId) {
+        enrollmentService.unenroll(activityId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping
     public ResponseEntity<ActivityDTO> create(@Valid @RequestBody ActivityDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(activityService.create(dto));

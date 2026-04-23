@@ -20,4 +20,7 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     @Query("SELECT COUNT(a) FROM Activity a JOIN a.members m WHERE m.id = :memberId AND a.startDate > :now")
     long countFutureActivitiesForMember(@Param("memberId") Long memberId, @Param("now") LocalDateTime now);
+
+    @Query("SELECT COUNT(m) FROM Activity a JOIN a.members m WHERE a.id = :activityId")
+    int countEnrolledMembers(@Param("activityId") Long activityId);
 }
