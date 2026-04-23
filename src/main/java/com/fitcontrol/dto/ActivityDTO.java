@@ -1,52 +1,44 @@
-package com.fitcontrol.model;
+package com.fitcontrol.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "activity")
-public class Activity {
+public class ActivityDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "Activity name is required")
-    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 255)
     private String description;
 
     @NotBlank(message = "Schedule is required")
-    @Column(nullable = false, length = 100)
     private String schedule;
 
     @NotNull(message = "Capacity is required")
     @Min(value = 1, message = "Capacity must be at least 1")
-    @Column(nullable = false)
     private Integer capacity;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+    @NotNull(message = "Teacher ID is required")
+    private Long teacherId;
 
-    public Activity() {}
+    private String teacherName;
 
-    public Activity(Long id, String name, String description, String schedule,
-                    Integer capacity, Boolean isActive, Teacher teacher) {
+    public ActivityDTO() {}
+
+    public ActivityDTO(Long id, String name, String description, String schedule,
+                       Integer capacity, Boolean isActive, Long teacherId, String teacherName) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.schedule = schedule;
         this.capacity = capacity;
         this.isActive = isActive;
-        this.teacher = teacher;
+        this.teacherId = teacherId;
+        this.teacherName = teacherName;
     }
 
     public Long getId() { return id; }
@@ -67,6 +59,9 @@ public class Activity {
     public Boolean getIsActive() { return isActive; }
     public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
-    public Teacher getTeacher() { return teacher; }
-    public void setTeacher(Teacher teacher) { this.teacher = teacher; }
+    public Long getTeacherId() { return teacherId; }
+    public void setTeacherId(Long teacherId) { this.teacherId = teacherId; }
+
+    public String getTeacherName() { return teacherName; }
+    public void setTeacherName(String teacherName) { this.teacherName = teacherName; }
 }

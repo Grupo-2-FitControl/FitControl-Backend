@@ -1,4 +1,4 @@
-package com.fitcontrol.controller;
+package com.fitcontrol.dto;
 
 public class MemberController {
 }

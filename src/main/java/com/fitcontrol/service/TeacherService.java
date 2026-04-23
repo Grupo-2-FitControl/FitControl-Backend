@@ -1,15 +1,14 @@
 package com.fitcontrol.service;
 
-import com.fitcontrol.dto.teacher.TeacherDTORequest;
-import com.fitcontrol.dto.teacher.TeacherDTOResponse;
+import com.fitcontrol.dto.TeacherDTO;
 
 import java.util.List;
 
 public interface TeacherService {
-    List<TeacherDTOResponse> findAll();
-    List<TeacherDTOResponse> findAllActive();
-    TeacherDTOResponse findById(Long id);
-    TeacherDTOResponse create(TeacherDTORequest dto);
-    TeacherDTOResponse update(Long id, TeacherDTORequest dto);
+    List<TeacherDTO> findAll();
+    List<TeacherDTO> findAllActive();
+    TeacherDTO findById(Long id);
+    TeacherDTO create(TeacherDTO dto);
+    TeacherDTO update(Long id, TeacherDTO dto);
     void delete(Long id);
 }
