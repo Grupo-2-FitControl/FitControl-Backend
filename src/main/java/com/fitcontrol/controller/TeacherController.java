@@ -1,7 +1,8 @@
 package com.fitcontrol.controller;
 
-import com.fitcontrol.dto.ActivityDTO;
-import com.fitcontrol.dto.TeacherDTO;
+import com.fitcontrol.dto.activity.ActivityDTOResponse;
+import com.fitcontrol.dto.teacher.TeacherDTORequest;
+import com.fitcontrol.dto.teacher.TeacherDTOResponse;
 import com.fitcontrol.service.ActivityService;
 import com.fitcontrol.service.TeacherService;
 import jakarta.validation.Valid;
@@ -24,27 +25,27 @@ public class TeacherController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeacherDTO>> getAll() {
+    public ResponseEntity<List<TeacherDTOResponse>> getAll() {
         return ResponseEntity.ok(teacherService.findAll());
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<TeacherDTO>> getActive() {
+    public ResponseEntity<List<TeacherDTOResponse>> getActive() {
         return ResponseEntity.ok(teacherService.findAllActive());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeacherDTO> getById(@PathVariable Long id) {
+    public ResponseEntity<TeacherDTOResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(teacherService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TeacherDTO> create(@Valid @RequestBody TeacherDTO dto) {
+    public ResponseEntity<TeacherDTOResponse> create(@Valid @RequestBody TeacherDTORequest dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(teacherService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TeacherDTO> update(@PathVariable Long id, @Valid @RequestBody TeacherDTO dto) {
+    public ResponseEntity<TeacherDTOResponse> update(@PathVariable Long id, @Valid @RequestBody TeacherDTORequest dto) {
         return ResponseEntity.ok(teacherService.update(id, dto));
     }
 
@@ -55,7 +56,7 @@ public class TeacherController {
     }
 
     @GetMapping("/{id}/activities")
-    public ResponseEntity<List<ActivityDTO>> getActivitiesByTeacher(@PathVariable Long id) {
+    public ResponseEntity<List<ActivityDTOResponse>> getActivitiesByTeacher(@PathVariable Long id) {
         return ResponseEntity.ok(activityService.findByTeacher(id));
     }
 }
